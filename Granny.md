@@ -1,9 +1,9 @@
 # はじめに
-Hack The Boxの攻略などを自分用にまとめたものです。
-主に記録用として記しています。
+Hack The Boxの攻略などを自分用にまとめたものです。  
+主に記録用として記しています。  
 Twitter:@yukitsukai_47
 # Granny
-HackTheBox公式より  
+HackTheBox公式より    
 <img width="416" alt="スクリーンショット 2020-05-25 14.57.49.png" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/6a4c0776-3fc4-f8d6-2729-1622f408da79.png">
 
 Granny, while similar to Grandpa, can be exploited using several different methods. The intended

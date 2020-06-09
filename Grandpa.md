@@ -1,9 +1,9 @@
 # はじめに
-Hack The Boxの攻略などを自分用にまとめたものです。
-主に記録用として記しています。
-Twitter:@yukitsukai_47
+Hack The Boxの攻略などを自分用にまとめたものです。  
+主に記録用として記しています。  
+Twitter:@yukitsukai_47  
 # Grandpa
-HackTheBox公式より
+HackTheBox公式より  
 ![コメント 2020-05-25 204109.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/b9eec01c-d09e-32fc-5837-520117c3e546.png)
 Grandpa is one of the simpler machines on Hack The Box, however it covers the widely-exploited
 CVE-2017-7269. This vulnerability is trivial to exploit and granted immediate access to thousands
