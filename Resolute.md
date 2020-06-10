@@ -1,16 +1,16 @@
 # はじめに
-Hack The Boxの攻略などを自分用にまとめたものです。
-主に記録用として記しています。
-現在のランクはHackerです。
-間違っていることも多いかと思いますが、よろしくお願いします。
+Hack The Boxの攻略などを自分用にまとめたものです。  
+主に記録用として記しています。  
+現在のランクはHackerです。  
+間違っていることも多いかと思いますが、よろしくお願いします。  
 <img src="http://www.hackthebox.eu/badge/image/185549" alt="Hack The Box">  
 チートシートも公開しておりますが知識がまだまだ不足しているため、学習経過とともに身につけた内容などを随時更新していきます。
-GitHub(ペネトレーションテスト用チートシート):
-https://github.com/yukitsukai47/PenetrationTesting_cheatsheet
+GitHub(ペネトレーションテスト用チートシート):  
+https://github.com/yukitsukai47/PenetrationTesting_cheatsheet  
 Twitter:@yukitsukai1731
 
 # Resolute
-このマシンはアクティブの時に僕がHackerになるために攻略した初のMediumマシンだったのでちょっとした思い入れがあります。
+このマシンはアクティブの時に僕がHackerになるために攻略した初のMediumマシンだったのでちょっとした思い入れがあります。  
 
 
 HackTheBox公式より
