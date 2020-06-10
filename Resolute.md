@@ -13,7 +13,7 @@ Twitter:@yukitsukai1731
 このマシンはアクティブの時に僕がHackerになるために攻略した初のMediumマシンだったのでちょっとした思い入れがあります。  
 
 
-HackTheBox公式より
+HackTheBox公式より  
 <img width="274" alt="スクリーンショット 2020-06-10 12.29.59.png" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/e4ced8fc-27e4-d903-0409-7c37b7babd8d.png">
 
 

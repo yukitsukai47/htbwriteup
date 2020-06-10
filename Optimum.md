@@ -7,7 +7,7 @@ Hack The Boxの攻略などを自分用にまとめたものです。
 Twitter:@yukitsukai1731
 
 # Optimum
-HackTheBox公式より
+HackTheBox公式より  
 ![スクリーンショット 2020-06-05 17.16.22.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/5cb721ff-1af6-a19a-3437-2545d6b14b66.png)
 
 Optimum is a beginner-level machine which mainly focuses on enumeration of services with known exploits. Both exploits are easy to obtain and have associated Metasploit modules, making this machine fairly simple to complete.
