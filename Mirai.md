@@ -1,12 +1,12 @@
 # はじめに
-Hack The Boxの攻略などを自分用にまとめたものです。  
-主に記録用として記しています。  
-現在のランクはHackerです。  
-間違っていることも多いかと思いますが、よろしくお願いします。  
+Hack The Boxの攻略などを自分用にまとめたものです。
+主に記録用として記しています。
+現在のランクはPro Hackerです。
+間違っていることも多いかと思いますが、よろしくお願いします。
 <img src="http://www.hackthebox.eu/badge/image/185549" alt="Hack The Box">  
-チートシートも公開しておりますが知識がまだまだ不足しているため、学習経過とともに身につけた内容などを随時更新していきます。  
-GitHub(ペネトレーションテスト用チートシート):    
-https://github.com/yukitsukai47/PenetrationTesting_cheatsheet  
+チートシートも公開しておりますが知識がまだまだ不足しているため、学習経過とともに身につけた内容などを随時更新していきます。
+GitHub(ペネトレーションテスト用チートシート):
+https://github.com/yukitsukai47/PenetrationTesting_cheatsheet
 Twitter:@yukitsukai1731
 
 # Mirai
@@ -98,12 +98,12 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 ブラウザからアクセスしてみましょう。
 ![スクリーンショット 2020-06-17 15.46.18.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/4a02dad6-8484-7751-28a5-b28f883dc586.png)
 
-ログイン画面が見つかりますが、パスワードが分かっていないためログインできません。  
+ログイン画面が見つかりますが、パスワードが分かっていないためログインできません。
 マシン名がmiraiという名前からデフォルトのパスワードが設定されていると予測し、デフォルトパスワードについて調べてみます。
 
 ![スクリーンショット 2020-06-17 15.33.46.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/567158a3-0512-7549-766c-abb22134a9fe.png)
 
-いろいろ調べてみたのですが、パスワードの確認を行うことはできず、シェルを取得した後変更をすることは可能のようです。（間違っていたらすみません）  
+いろいろ調べてみたのですが、パスワードの確認を行うことはできず、シェルを取得した後変更をすることは可能のようです。（間違っていたらすみません）
 
 次にnmapの結果から、sshのポートが空いていることが分かっているのでRaspberry Piのデフォルトパスワードを調べてみます。
 
@@ -119,10 +119,32 @@ ssh pi@10.10.10.48
 
 ![スクリーンショット 2020-06-17 15.55.12.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/98bf8dd7-2b17-6e30-54ba-afeafbf2acab.png)
 
-ログインできました。  
-miraiと言う名前からsshに何らかのデフォルトパスワードでログインするのではないか？という推測ができれば比較的に簡単に攻略できるものでした。  
-https://monoist.atmarkit.co.jp/mn/articles/2003/13/news027.html  
+ログインできました。
+miraiと言う名前からsshに何らかのデフォルトパスワードでログインするのではないか？という推測ができれば比較的に簡単に攻略できるものでした。
+https://monoist.atmarkit.co.jp/mn/articles/2003/13/news027.html
 この記事でもsshは第3位の標的とされています。
+
+
+## [2021/5/26 追記事項]
+searchsploitの結果、pi-hole 4.4以下に利用できるCVE-2020-11108 RCE(Remote Code Execution (Authenticated)があります。  
+
+```
+┌──(kali㉿kali)-[~/htb/boxes/Mirai]
+└─$ searchsploit pi-hole 3.1.4
+------------------------------------------------- ---------------------------------
+ Exploit Title                                   |  Path
+------------------------------------------------- ---------------------------------
+Pi-hole < 4.4 - Authenticated Remote Code Execut | linux/webapps/48442.py
+Pi-hole < 4.4 - Authenticated Remote Code Execut | linux/webapps/48443.py
+------------------------------------------------- ---------------------------------
+Shellcodes: No Results
+```
+
+遊びがてら、「pihole -a -p」コマンドを用いてパスワードを変更して、このエクスプロイトを試してみようと思い3つほどの試行と手動で行ったのですが成功することはありませんでした。  
+おそらくCVE-2020-11108ではfun.phpが使用されているところ、miraiにはfun.phpが配置されておらずfunc.phpというファイルが利用されている部分でエクスプロイトが詰まっているのかなと思っています。  
+miraiではpi-hole 3.1.4が用いられおり、4.4以下に有効とされつつも刺さらないのか、作問者が削除してしまっているのかまでは~~調べるのがめんどくさくて~~分かりませんでした。
+
+いずれにしろ、次回どこかでCVEを使用する機会があれば、しっかり検証しようと思います。
 
 # 特権エスカレーション
 
@@ -132,12 +154,12 @@ sudo -l
 - -l...sudoを実行するユーザーに許可されているコマンドを一覧表示する。
 ![スクリーンショット 2020-06-17 15.57.24.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/713e1aaf-b6d9-3b61-7dd1-04ca35a1dd00.png)
 
-このことから全てのユーザがsudoを許可されていることが分かります。  
-sudo suを使って権限を昇格させましょう。  
+このことから全てのユーザがsudoを許可されていることが分かります。
+sudo suを使って権限を昇格させましょう。
 ![スクリーンショット 2020-06-17 16.18.56.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/a90d64f2-bbb3-a9ad-e91c-e39bed6a632f.png)
 
-rootも取得できたので、これで終わりかと思いきや、実は続きがあります。  
-root.txtの中身を見ると、メッセージが残させていることが分かります。  
+rootも取得できたので、これで終わりかと思いきや、実は続きがあります。
+root.txtの中身を見ると、メッセージが残させていることが分かります。
 
 ![スクリーンショット 2020-06-17 16.20.00.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/00006652-86c0-c1a7-f9ed-29f70986b8ca.png)
 
@@ -155,21 +177,40 @@ dfコマンドはディスクの使用状況を表示するコマンドです。
 
 ![スクリーンショット 2020-06-17 16.33.26.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/45d2c384-e558-f6db-caf1-c353384ce79e.png)
 
-damnit.txtと言うものが見つかります。  
-確認してみると、今度はUSBメモリからデータを削除してしまった。というメッセージが残されています。  
-ちなみにdamnitは「くそっ！」「ちくしょう！」を表すスラングのようです。  
- 
-/dev/sdbに/media/usbstickがあったのでddコマンドを用いてUSBドライブのコピーをしてから中身を見れるように作業を行います。
-
-```
-dd if=/dev/sdb of=/home/usbstick.txt
-```
+damnit.txtと言うものが見つかります。
+確認してみると、今度はUSBメモリからデータを削除してしまった。というメッセージが残されています。
+ちなみにdamnitは「くそっ！」「ちくしょう！」を表すスラングのようです。
 
 stringsコマンドで確認してみます。
 stringsコマンドはバイナリファイルやデータファイルから“文字列”として読める箇所を表示するコマンドなので、読めるところを抽出してくれます。
 
-![スクリーンショット 2020-06-17 17.02.32.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/fdd15bf4-c39b-3e21-4a24-335ddf8b2313.png)
+```
+root@raspberrypi:~# strings /dev/sdb
+>r &
+/media/usbstick
+lost+found
+root.txt
+damnit.txt
+>r &
+>r &
+/media/usbstick
+lost+found
+root.txt
+damnit.txt
+>r &
+/media/usbstick
+2]8^
+lost+found
+root.txt
+damnit.txt
+>r &
+3d3e483143ff12ec505d026fa13e020b
+Damnit! Sorry man I accidentally deleted your files off the USB stick.
+Do you know if there is any way to get them back?
+-James
+```
+
 rootフラグを見つけることができました。
 ちなみにcatでもフラグは確認できました。
-![スクリーンショット 2020-06-17 16.41.35.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/0abe102d-1371-a5a6-3d8a-9d713c59ff92.png)
+![スクリーンショット 2021-05-26 175051.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/5770ced2-ae9c-d534-35d7-b6b6728486ee.png)
 お疲れ様でした。
