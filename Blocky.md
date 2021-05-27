@@ -1,13 +1,16 @@
 # はじめに
-Hack The Boxの攻略などを自分用にまとめたものです。  
-主に記録用として記しています。  
-現在のランクはHackerです。  
-間違っていることも多いかと思いますが、よろしくお願いします。  
+Hack The Boxの攻略などを自分用にまとめたものです。
+主に記録用として記しています。
+現在のランクはPro Hackerです。
+間違っていることも多いかと思いますが、よろしくお願いします。
 <img src="http://www.hackthebox.eu/badge/image/185549" alt="Hack The Box">  
+チートシートも公開しておりますが知識がまだまだ不足しているため、学習経過とともに身につけた内容などを随時更新していきます。
+GitHub(ペネトレーションテスト用チートシート):
+https://github.com/yukitsukai47/PenetrationTesting_cheatsheet
 Twitter:@yukitsukai1731
 
 # Blocky
-HackTheBox公式より  
+HackTheBox公式より
 <img width="354" alt="スクリーンショット 2020-06-06 1.50.11.png" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/beaeb91b-1dc4-ef7b-879a-c8a7bc56bc7d.png">
 
 Blocky is fairly simple overall, and was based on a real-world machine. It demonstrates the risks of bad password practices as well as exposing internal files on a public facing system. On top of
@@ -99,7 +102,8 @@ by OJ Reeves (@TheColonial) & Christian Mehlmauer (@_FireFart_)
 ===============================================================
 ```
 
-スキャン中の結果からWordPressを用いてサイトを構築していることがわかります。
+スキャン中の結果からWordPressを用いてサイトを構築していることがわかります。　　
+また管理にphpmyadminが用いられています。
 wpscanも使用して、並行してスキャンを進めていきましょう。
 
 ## wpscan
@@ -209,7 +213,7 @@ Interesting Finding(s):
 この結果からnotch,Notchというユーザが見つかります。
 
 # 侵入
-先ほどのgobusterの結果から/pluginをブラウザから閲覧してみます。
+先ほどのgobusterの結果から/pluginをブラウザから閲覧してみます。  
 するとこのような2つのjarファイルが見つかります。
 <img width="1157" alt="スクリーンショット 2020-06-06 1.38.56.png" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/ca36949b-5bce-81d7-205f-5fc36f85272f.png">
 
@@ -221,18 +225,69 @@ kali@kali:~/htb/Blocky$ jar -xvf BlockyCore.jar
   inflated: com/myfirstplugin/BlockyCore.class
 ```
 
-このclassファイルをデコンパイルしてみましょう。
-jadもありますが、手元の環境でインストールされていなかったためオンラインでデコンパイルしてくれるものを使用しました。
-
-<img width="1239" alt="スクリーンショット 2020-06-06 11.51.02.png" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/38317137-3153-0571-a8b6-8bc182c7cd2b.png">
+このclassファイルをデコンパイルしてみましょう。  
+ghidraを使います。  
+GHIDRA:  
+https://ghidra-sre.org/
+![スクリーンショット 2021-05-27 164629.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/543a0e78-019c-ba7d-331b-cef7aa1db918.png)
+![スクリーンショット 2021-05-27 164648.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/dcf654dc-433f-39a0-2650-38ce2ca2af45.png)
 
 プレーンテキストでrootとそのpassを見つけることができます。
-これをgobusterで見つけたphpmyadminに入力してみると無事アクセスに成功し、notchというユーザが確認できます。
+stringsコマンドを用いてもこの文字列を確認することができます。
+![スクリーンショット 2021-05-27 170447.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/d6be43dd-55df-1007-d074-f4a37cbd5c60.png)
+
+これをgobusterで見つけたphpmyadminに入力してみると無事アクセスに成功し、wordpressのwp_userを見てみるとnotchというユーザが確認できます。
 
 <img width="1268" alt="スクリーンショット 2020-06-06 13.33.58.png" src="https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/20b7bc5d-85c3-bf1a-18e2-6bcac33e7310.png">
 
-これはwpscanでも出てきたユーザ名なので、notchと先ほど見つけたpassを使用してssh接続してみます。
+## 方法1
+#### ユーザーnotchのパスワードをphpmyadminから変更してやる
+下記のハッシュを変更して、wordpressにログイン → reverse shellの流れていきたいと思います。
 
+```
+notch $P$BiVoTj899ItS1EZnMhqeqVbrZI4Oq0/
+```
+このハッシュ値のタイプをhash-identiferやgoogleで検索をかけてみると、MD5ということが分かります。
+![スクリーンショット 2021-05-27 170926.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/aa7540b4-3da5-4448-7f44-3d3707d09b49.png)
+![スクリーンショット 2021-05-27 171110.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/342b7952-f570-fb1e-3b59-3f75abfeac90.png)
+
+WordPressのnotchのパスワードを"password"にしてやろうと思うので、MD5の値を出します。
+![スクリーンショット 2021-05-27 171942.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/8ce0ad12-3285-b9e7-a9b8-a4b114d6a1bb.png)
+
+ユーザーnotchのところのEditボタンを教えて、phpmyadminからパスワードを変更します。
+![スクリーンショット 2021-05-27 173255.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/d71bdbd2-96ad-4911-d046-080f33f74f23.png)
+![スクリーンショット 2021-05-27 173216.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/e4335f5c-b584-8a71-eac7-b1b67e3bb266.png)
+
+ユーザ名:notch  
+パスワード:passwordでログインします。
+![スクリーンショット 2021-05-27 173313.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/4e9bfc2a-2d39-06d1-2004-0ce9bb524ce4.png)
+
+変更したパスワードを用いて、ログインに成功します。
+![スクリーンショット 2021-05-27 173124.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/8dc41756-24dd-a880-61af-d52d939f4e72.png)
+
+以下の記事を参考にreverse shellを取得します。  
+WordPress: Reverse Shell:  
+https://www.hackingarticles.in/wordpress-reverse-shell/
+
+[Appearance]→[Editor]→[404 Template]に進み、phpリバースシェルスクリプトに置き換えます。  
+使用したスクリプトは下記のものになります。  
+pentestmonkey php-reverse-shell:  
+http://pentestmonkey.net/tools/web-shells/php-reverse-shell
+![スクリーンショット 2021-05-27 174353.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/3d5d7a30-856b-95d3-50e0-dc273c9ca43e.png)
+![スクリーンショット 2021-05-27 174333.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/ef92fbdd-afe7-e0d9-719a-7a41230df24d.png)
+
+[Update File]完了後、netcatで待ち受けてから、下記のURLにアクセスします。  
+twentyseventeenの箇所は自身が配置したパスに変更してください。
+
+```
+http://10.10.10.37/wp-content/themes/twentyseventeen/404.php
+```
+![スクリーンショット 2021-05-27 175111.png](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/447800/12fc2fe9-064e-a099-e85d-9630fe9a556a.png)
+これでシェルを取得完了です。
+
+## 方法2
+#### パスワードの使いまわし
+classファイルにプレーンテキストでハードコーディングされていたパスワードをsshで使用するとそのまま接続ができてしまいます。
 
 ```
 kali@kali:~/htb/Blocky$ ssh notch@10.10.10.37
@@ -252,7 +307,7 @@ notch@Blocky:~$ ls
 minecraft  user.txt
 ```
 
-ssh接続できました。続いてこのユーザにsudo権限があるか試してみます。
+ssh接続できました。続いてこのユーザにsudo権限があるか試してみます。  
 パスワードには先ほどと同じものを使用します。
 
 ```
@@ -272,5 +327,5 @@ notch@Blocky:/$ sudo cat root/root.txt
 0a9694a5b4d???????????????????? notch@Blocky:/$
 ```
 
-sudo権限があったため直接root.txtファイルの中身を見ることができました。
+sudo権限があったため直接root.txtファイルの中身を見ることができました。  
 お疲れ様でした。
